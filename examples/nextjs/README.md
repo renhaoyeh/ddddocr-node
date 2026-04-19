@@ -1,5 +1,7 @@
 # ddddocr-node · Next.js Minimal Example
 
+[中文](./README.zh-TW.md)
+
 Reproduces and resolves [issue #3](https://github.com/renhaoyeh/ddddocr-node/issues/3):
 
 > Load model from /xx/.next/server/onnx/common_old.onnx failed: File doesn't exist

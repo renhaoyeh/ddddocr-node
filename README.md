@@ -21,6 +21,7 @@ npm install ddddocr-node
  - Basic OCR recognition capability
  - OCR probability output
  - Object detection capability
+ - Slider captcha matching & gap comparison
 
 ### Basic OCR recognition capability
 
@@ -126,11 +127,47 @@ for (let i = 0; i < result.length; i++) {
 image.write('output.jpg');
 ```
 
+## Slider captcha
+
+Two algorithms are provided for slider captchas. They do not require any model files.
+
+### Template matching — `slideMatch(target, background, simpleTarget?)`
+
+Locates a puzzle-piece image inside a background image.
+
+- With `simpleTarget = false` (default), both images are run through Canny edge detection before template matching. Use this when the puzzle piece has a transparent background.
+- With `simpleTarget = true`, grayscale template matching is used directly. Use this when the puzzle piece is an opaque image.
+
+Returns `{ target: [center_x, center_y], target_x, target_y, confidence }` — the center coordinates of the matched position, identical to the Python `ddddocr.slide_match` return format.
+
+```js
+const { readFile } = require('node:fs/promises');
+const { DdddOcr } = require('ddddocr-node');
+
+const ddddOcr = new DdddOcr();
+
+const target = await readFile('target.png');
+const background = await readFile('background.png');
+
+const result = await ddddOcr.slideMatch(target, background);
+console.log(result);
+```
+
+### Image difference — `slideComparison(target, background)`
+
+Finds the gap position by comparing two equally-sized images: one with the gap shadow/highlight visible and the full background.
+
+Returns `{ target: [x, y], target_x, target_y }` — the center point of the largest difference region.
+
+```js
+const res = await ddddOcr.slideComparison(targetBuf, backgroundBuf);
+console.log(res); // { target: [x, y], target_x, target_y }
+```
+
 ## Star History
 
 [![Star History Chart](https://api.star-history.com/svg?repos=renhaoyeh/ddddocr-node&type=date&legend=top-left)](https://www.star-history.com/#renhaoyeh/ddddocr-node&type=date&legend=top-left)
 
 ## Futures
 
- - Slider detection
  - Import custom OCR training model

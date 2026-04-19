@@ -1,5 +1,6 @@
 import { OCR, CHARSET_RANGE } from './Ocr.js';
 import { Detection } from './Detection.js';
+import { Slide } from './Slide.js';
 import { LogSeverityLevel } from './type.js';
 
 import { existsSync, rmSync, mkdirSync, isSupportDebug } from './file-ops/index.js';
@@ -25,6 +26,8 @@ class DdddOcr {
 
     private _detection: Detection;
 
+    private _slide: Slide;
+
     /**
      * Class representing an OCR (Optical Character Recognition) model.
      */
@@ -33,6 +36,8 @@ class DdddOcr {
         this._ocrBeta = new OCR('common.onnx', 'common.json');
 
         this._detection = new Detection('common_det.onnx');
+
+        this._slide = new Slide();
     }
 
     /**
@@ -122,14 +127,43 @@ class DdddOcr {
     }
 
     /**
-     * Detects objects in an image by extracting bounding boxes and optionally 
+     * Detects objects in an image by extracting bounding boxes and optionally
      * visualizing the detection results on the image.
-     * 
-     * This method reads the image, retrieves bounding boxes, and then optionally 
+     *
+     * This method reads the image, retrieves bounding boxes, and then optionally
      * draws the detected bounding boxes on the image if debugging is enabled.
      */
     public async detection(url: string) {
         return this._detection.detection(url);
+    }
+
+    /**
+     * Matches a slider puzzle piece against a background image.
+     *
+     * - When `simpleTarget` is `false` (default), Canny edge detection is
+     *   applied before template matching — suited for puzzle pieces with
+     *   transparent backgrounds.
+     * - When `simpleTarget` is `true`, grayscale template matching is used
+     *   directly — suited for simple (opaque) puzzle pieces.
+     */
+    public async slideMatch(
+        targetImage: Parameters<Slide['slideMatch']>[0],
+        backgroundImage: Parameters<Slide['slideMatch']>[1],
+        simpleTarget = false
+    ) {
+        return this._slide.slideMatch(targetImage, backgroundImage, simpleTarget);
+    }
+
+    /**
+     * Finds the slider gap position by comparing two images: one with a gap
+     * shadow/highlight visible, and the full background image. Returns the
+     * center coordinates of the largest connected difference region.
+     */
+    public async slideComparison(
+        targetImage: Parameters<Slide['slideComparison']>[0],
+        backgroundImage: Parameters<Slide['slideComparison']>[1]
+    ) {
+        return this._slide.slideComparison(targetImage, backgroundImage);
     }
 }
 

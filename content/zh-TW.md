@@ -21,6 +21,7 @@ npm install ddddocr-node
  - 基礎 OCR 識別能力
  - OCR 機率輸出
  - 目標偵測能力
+ - 滑塊驗證碼匹配與缺口比對
 
 ### 基礎 OCR 識別能力
 
@@ -126,11 +127,47 @@ for (let i = 0; i < result.length; i++) {
 image.write('output.jpg');
 ```
 
+## 滑塊驗證碼
+
+提供兩種滑塊驗證碼處理演算法，兩者都不需要任何模型檔。
+
+### 模板匹配 — `slideMatch(target, background, simpleTarget?)`
+
+在背景圖中尋找滑塊拼圖的位置。
+
+- 當 `simpleTarget = false`（預設）時，會先對兩張圖做 Canny 邊緣偵測後再進行模板匹配。適用於帶有透明背景的拼圖。
+- 當 `simpleTarget = true` 時，直接使用灰階模板匹配。適用於沒有透明背景的不透明拼圖。
+
+回傳 `{ target: [center_x, center_y], target_x, target_y, confidence }` — 匹配位置的中心座標，與 Python `ddddocr.slide_match` 回傳格式相同。
+
+```js
+const { readFile } = require('node:fs/promises');
+const { DdddOcr } = require('ddddocr-node');
+
+const ddddOcr = new DdddOcr();
+
+const target = await readFile('target.png');
+const background = await readFile('background.png');
+
+const result = await ddddOcr.slideMatch(target, background);
+console.log(result);
+```
+
+### 圖像差異比對 — `slideComparison(target, background)`
+
+比對兩張大小相同的圖片：一張帶有缺口陰影/高亮，一張為完整背景，藉此找出缺口位置。
+
+回傳 `{ target: [x, y], target_x, target_y }`，即最大差異區域的中心點。
+
+```js
+const res = await ddddOcr.slideComparison(targetBuf, backgroundBuf);
+console.log(res); // { target: [x, y], target_x, target_y }
+```
+
 ## Star 歷史
 
 [![Star History Chart](https://api.star-history.com/svg?repos=renhaoyeh/ddddocr-node&type=date&legend=top-left)](https://www.star-history.com/#renhaoyeh/ddddocr-node&type=date&legend=top-left)
 
 ## 未來計畫
 
- - 滑塊偵測
  - 匯入自定義 OCR 訓練模型

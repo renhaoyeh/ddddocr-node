@@ -1,3 +1,5 @@
+import { describe, test, expect, beforeAll } from 'vitest';
+
 import { DdddOcr, CHARSET_RANGE, MODEL_TYPE } from '../dist/esm/index.js';
 
 describe('DdddOcr Source Tests', () => {

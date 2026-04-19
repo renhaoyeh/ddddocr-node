@@ -1,3 +1,5 @@
+import { describe, test, expect } from 'vitest';
+
 import { DdddOcr } from '../dist/esm/index.js';
 
 describe('DdddOcr ESM Distribution Tests', () => {

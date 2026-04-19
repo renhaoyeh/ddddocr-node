@@ -1,3 +1,5 @@
+import { describe, test, expect } from 'vitest';
+
 import { DdddOcr } from '../dist/commonjs/index.js';
 
 describe('DdddOcr CJS Distribution Tests', () => {

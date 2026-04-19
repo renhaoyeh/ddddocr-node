@@ -1,3 +1,5 @@
+import { describe, test, expect, beforeAll } from 'vitest';
+
 import { DdddOcr } from '../dist/esm/index.js';
 
 describe('DdddOcr Slide Tests', () => {
